@@ -5,7 +5,7 @@ Created by T. Nishikawa based on [FAIR V-ＶＰＰ5m記号付07-11-11.xls] of Pr
 import numpy as np
 from coeffs import Coefficients
 from balance import Balance
-from scipy.optimize import minimize
+import scipy as sp
 import matplotlib.pyplot as plt
 
 class Constants:
@@ -26,48 +26,38 @@ def objective(x):
     beta  = x[1] # Leeway
     delta = x[2] # rudder angle
     phi   = x[3] # heel angle
-    blc.update_params(u,beta,delta,phi,gamma_t,ut)
-    x = blc.x(u,beta,delta,phi)
-    y = blc.y(u,beta,delta,phi)
-    k = blc.k(u,beta,delta,phi)
-    n = blc.n(u,beta,delta,phi)
-    residual = x*x + y*y + k*k + n*n
-    return residual
+    blc.update_params(u,beta,delta,phi,gamma_t,ut)    
+    f = np.zeros(4, dtype=np.float64)
+    f[0] = blc.x(u,beta,delta,phi)
+    f[1] = blc.y(u,beta,delta,phi)
+    f[2] = blc.k(u,beta,delta,phi)
+    f[3] = blc.n(u,beta,delta,phi)
+    return f
+    
+if __name__ == "__main__":
+    ut = 5       # true wind speed
 
-def cons(x):
-    a = 12 - np.fabs(x[0])
-    b = 30 - np.fabs(x[1])
-    c = 50 - np.fabs(x[2])
-    d = 50 - np.fabs(x[3])    
-    return np.min([a,b,c,d])
+    cfs = Coefficients()   # 微係数
+    cts = Constants()      # 要目など
+    blc = Balance(cts,cfs)
+    
+    # --- start ---
+    dat = [] 
+    x0 = [4.0, 5.0, -15, -35]    
+    for gamma_t in range(30,180,5):
+        result = sp.optimize.root(objective, x0, method='lm') #'hybr'
+        print("twa={0:5.2f},u={1:5.2f},beta={2:5.2f},delta={3:.2f},phi={4:.2f},residual={5:g}".format(gamma_t,result.x[0],result.x[1],result.x[2],result.x[3],np.linalg.norm(result.fun, ord=2)))
+        dat.append([gamma_t,result.x[0],result.x[1],result.x[2],result.x[3]])
+        
+    # --- plot ---
+    d = np.array(dat).T
+    plt.plot(d[0],d[1],   label="Boat speed X[m/s]")
+    plt.plot(d[0],d[2],   label="Leeway angle[deg]")
+    plt.plot(d[0],d[3],   label="Rudder angle[deg](luff up: plus)")
+    plt.plot(d[0],d[4]/10,label="Heel angle [deg/10](anti heel: plus)")
+    plt.xlabel("True wind angle [deg]")
+    #plt.ylim(-10,10)
+    plt.legend()
+    plt.grid()
+    plt.show()
 
-cons = (
-    {'type': 'ineq', 'fun': cons}
-)
-
-cfs = Coefficients()   # 微係数
-cts = Constants()      # 要目など
-blc = Balance(cts,cfs)
-
-ut = 5       # true wind speed
-
-# --- start ---
-dat = []
-for gamma_t in range(30,180,5):
-    x = np.array([4.0, 5.0, -15.0, -35.0])    
-    #result = minimize(objective, x0=x, method="BFGS")
-    result = minimize(objective, x0=x, constraints=cons, method="L-BFGS-B")
-    print("twa={0:5.2f},u={1:5.2f},beta={2:5.2f},delta={3:.2f},phi={4:.2f},res={5:.2f}".format(gamma_t,result.x[0],result.x[1],result.x[2],result.x[3],result.fun))
-    dat.append([gamma_t,result.x[0],result.x[1],result.x[2],result.x[3],result.fun])
-
-# --- plot ---
-d = np.array(dat).T
-plt.plot(d[0],d[1],    label="Boat speed X[m/s]")
-plt.plot(d[0],d[2],    label="Leeway angle[deg]")
-plt.plot(d[0],-d[3],   label="Rudder angle[deg]")
-plt.plot(d[0],-d[4]/10,label="Heel angle [deg/10]")
-plt.xlabel("True wind angle [deg]")
-plt.ylim(0,10)
-plt.legend()
-plt.grid()
-plt.show()
