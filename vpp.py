@@ -16,11 +16,11 @@ class VPP:
         self.cfs = cfs
         self.blc = Balance(cts,cfs)
 
-    def run(self,a0,a1,d,verbose=False):
+    def run(self,a0,a1,verbose=False):
         # --- start ---
         dat = [] 
         x = [0.8*self.ut, 0, 0, 0]
-        for self.gamma_t in range(a0,a1,d):
+        for self.gamma_t in range(a0,a1,5):
             result = sp.optimize.root(self.objective, x, method='lm') #'hybr'
             if verbose:
                 print("twa={0:5.1f}, u={1:5.2f}, beta={2:5.2f}, delta={3:5.1f}, phi={4:5.1f}, residual={5:5.2f}".format(self.gamma_t,result.x[0],result.x[1],result.x[2],result.x[3],np.linalg.norm(result.fun, ord=2)))
