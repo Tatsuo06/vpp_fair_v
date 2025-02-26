@@ -28,12 +28,13 @@ class VPP:
         
     def plot_polar(self):    
         ax = plt.subplot(111, projection="polar")
-        ax.plot(self.dat[0]*np.pi/180, self.dat[1])
+        ax.plot(self.dat[0]*np.pi/180, self.dat[1]*3600/1852)
         ax.set_theta_direction(-1)
         ax.set_theta_zero_location("N")
-        ax.set_title("Boat Speed[m/s]")
+        ax.set_title("Boat Speed[knot]")
         #ax.set_rlim([0, 5.0])
-        plt.show()
+        #plt.show()
+        plt.savefig("polar.png")
         plt.clf()
         plt.close()
 
@@ -46,7 +47,8 @@ class VPP:
         #plt.ylim(-10,10)
         plt.legend()
         plt.grid()
-        plt.show()
+        #plt.show()
+        plt.savefig("result.png")
         plt.clf()
         plt.close()        
 
@@ -55,11 +57,8 @@ class VPP:
         beta  = x[1] # Leeway
         delta = x[2] # rudder angle
         phi   = x[3] # heel angle
-        self.blc.update_params(u,beta,delta,phi,self.gamma_t,self.ut)    
-        f = np.zeros(4, dtype=np.float64)
-        f[0] = self.blc.x(u,beta,delta,phi)
-        f[1] = self.blc.y(u,beta,delta,phi)
-        f[2] = self.blc.k(u,beta,delta,phi)
-        f[3] = self.blc.n(u,beta,delta,phi)
-        return f
-
+        self.blc.update_params(u,beta,delta,phi,self.gamma_t,self.ut)
+        h = self.blc.hull(u,beta,delta,phi)
+        r = self.blc.rudder(u,beta,delta,phi)
+        s = self.blc.sail(u,beta,delta,phi)
+        return h + r + s

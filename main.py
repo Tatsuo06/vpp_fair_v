@@ -14,7 +14,7 @@ class Constants:
         self.rhow = 1025.0
         self.g    = 9.807
 
-        a = 2.515
+        a = 1.0 # 2.515
         self.l    = 8.55 * a
         self.d    = 1.94 * a
         self.s    = 56.4 * a**2
@@ -23,11 +23,11 @@ class Constants:
         self.gm   = 1.31 * a
 
 if __name__ == "__main__":
-    ut = 10                # true wind speed
+    ut = 5                # true wind speed
     cfs = Coefficients()
     cts = Constants()
     vpp = VPP(ut,cts,cfs)
     vpp.run(10,180,5)      # true wind angle range
     vpp.plot_polar()
-    #vpp.plot()
+    vpp.plot()
     
