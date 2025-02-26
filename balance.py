@@ -31,9 +31,9 @@ class Balance:
         return [ x*x*x*x*x, x*x*x*x, x*x*x, x*x, x, 1]
     
     def x(self,u,beta,delta,phi):
-        rt = np.dot(self.cfs.rt,self.__pvec(self.vb)) * self.cts.g
-        #fn = self.vb / np.sqrt(self.cts.l * self.cts.g)
-        #rt = np.dot(self.cfs.ct,self.__pvec(fn)) * self.waterco
+        #rt = np.dot(self.cfs.rt,self.__pvec(self.vb)) * self.cts.g
+        fn = self.vb / np.sqrt(self.cts.l * self.cts.g)
+        ct = np.dot(self.cfs.ct,self.__pvec(fn))
                 
         # --- hull ---
         phi_rad = phi * np.pi / 180.0
@@ -41,7 +41,7 @@ class Balance:
         a = np.array([self.cfs.xvv, self.cfs.xvp, self.cfs.xpp,    self.cfs.xvvvv])
         b = np.array([v0*v0,        v0*phi_rad,   phi_rad*phi_rad, v0*v0*v0*v0])
         xh0 = np.dot(a,b)
-        xh  = -rt + xh0 * self.waterco
+        xh  = (-ct + xh0) * self.waterco
 
         # --- rudder ---        
         xd  = self.cfs.cxd * np.sin(self.alpha_r*np.pi/180) * np.sin(delta*np.pi/180) * self.waterco 
