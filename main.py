@@ -15,13 +15,23 @@ class Constants:
         self.g    = 9.807
 
         a = 1.0 # 2.515
-        self.l    = 8.55 * a
-        self.d    = 1.94 * a
-        self.s    = 56.4 * a**2
-        self.zce  = -6.4 * a
-        self.disp = 3775.0 * a**3
-        self.gm   = 1.31 * a
+        self.lwl       = 8.55 * a
+        self.draft     = 1.94 * a
+        self.sail_area = 56.4 * a**2
+        self.zce       = -6.4 * a
+        self.disp      = 3775.0 * a**3
+        self.gm        = 1.31 * a
 
+        self.wsa = self.lwl * self.draft
+        
+        print("LWL:       {0:.2f}".format(self.lwl))
+        print("Draft:     {0:.2f}".format(self.draft))
+        print("Disp:      {0:.2f}".format(self.disp))
+        print("WSA:       {0:.2f}".format(self.wsa))
+        print("Sail Area: {0:.2f}".format(self.sail_area))
+        print("CEz:       {0:.2f}".format(self.zce))
+        print("GM:        {0:.2f}".format(self.gm))
+        
 if __name__ == "__main__":
     ut = 5                # true wind speed
     cfs = Coefficients()
