@@ -63,17 +63,18 @@ if __name__ == "__main__":
     #print("phi, beta, fn, cfx, cfy, cmx, cmz")
     #for h in hull:
     #    print("{0:5.2f},{1:5.2f},{2:5.2f},{3:10.2e},{4:10.2e},{5:10.2e},{6:10.2e}".format(h[0],h[1],h[2],h[3],h[4],h[5],h[6]))
+    np.save("hull",hull.reshape(len(phi_range),len(beta_range),len(fn_range),7))
 
     # --- convert ---
-    data = np.zeros(len(phi_range)*len(beta_range)*len(fn_range)*7)
-    data = data.reshape(len(phi_range),len(beta_range),len(fn_range),7)
-    n = 0
-    for i in range(len(phi_range)):
-        for j in range(len(beta_range)):
-            for k in range(len(fn_range)):
-                data[i][j][k] = hull[n]
-                n += 1
-    np.save("hull",data)
+    #data = np.zeros(len(phi_range)*len(beta_range)*len(fn_range)*7)
+    #data = data.reshape(len(phi_range),len(beta_range),len(fn_range),7)
+    #n = 0
+    #for i in range(len(phi_range)):
+    #    for j in range(len(beta_range)):
+    #        for k in range(len(fn_range)):
+    #            data[i][j][k] = hull[n]
+    #            n += 1
+    #np.save("hull",data)
 
     # -------------------------
     hull = np.load("hull.npy")    
