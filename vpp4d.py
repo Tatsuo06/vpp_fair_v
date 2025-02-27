@@ -5,16 +5,15 @@ Created by T. Nishikawa based on [FAIR V-ＶＰＰ5m記号付07-11-11.xls] of Pr
 
 import numpy as np
 from coeffs import Coefficients
-from balance import Balance
 import scipy as sp
 import matplotlib.pyplot as plt
 
 class VPP4D:
-    def __init__(self,ut,cts,cfs):
+    def __init__(self,ut,cts,cfs,blc):
         self.ut  = ut
         self.cts = cts
         self.cfs = cfs
-        self.blc = Balance(cts,cfs)
+        self.blc = blc
 
     def run(self,a0,a1,verbose=False):
         # --- start ---
@@ -27,7 +26,7 @@ class VPP4D:
             dat.append([self.gamma_t,result.x[0],result.x[1],result.x[2],result.x[3]])
         self.dat = np.array(dat).T
         
-    def plot_polar(self,rmin,rmax):    
+    def plot_polar(self,rmin,rmax,fname):    
         ax = plt.subplot(111, projection="polar")
         ax.plot(self.dat[0]*np.pi/180, self.dat[1]*3600/1852)
         ax.set_theta_direction(-1)
@@ -35,11 +34,11 @@ class VPP4D:
         ax.set_title("Boat Speed[knot](4DOF)")
         ax.set_rlim([rmin, rmax])
         #plt.show()
-        plt.savefig("polar.png")
+        plt.savefig(fname)
         plt.clf()
         plt.close()
 
-    def plot(self,ymin,ymax):
+    def plot(self,ymin,ymax,fname):
         a = np.sqrt(self.cts.lwl*self.cts.g)
         plt.plot(self.dat[0], self.dat[1]/a*10, label="Boat speed Fn*10")
         plt.plot(self.dat[0], self.dat[2],      label="Leeway angle[deg]")
@@ -51,7 +50,7 @@ class VPP4D:
         plt.grid()
         plt.title("4DOF")
         #plt.show()
-        plt.savefig("result.png")
+        plt.savefig(fname)
         plt.clf()
         plt.close()        
 

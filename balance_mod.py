@@ -3,13 +3,20 @@ Created by T. Nishikawa based on [FAIR V-ＶＰＰ5m記号付07-11-11.xls] of Pr
 2025.02.13
 """
 import numpy as np
+from scipy.interpolate import RegularGridInterpolator
 
-class Balance:
+class BalanceMod:
 
     def __init__(self,cts,cfs):
         self.cts = cts
         self.cfs = cfs
 
+        self.hull_coeffs = np.load("hull.npy")
+        rphi  = np.linspace(0,  30.0, 4)
+        rbeta = np.linspace(0,   0.6, 4)
+        rfn   = np.linspace(0.1, 1.0, 10)
+        self.param_range = (rphi, rbeta, rfn)
+        
     def update_params(self,u,beta,delta,phi,gamma_t,ut):
         self.v  = -u * np.tan(beta*np.pi/180)  # 横流れ速度
         self.v0 =     -np.sin(beta*np.pi/180)  # 基準横流れ速度
@@ -25,35 +32,21 @@ class Balance:
         self.waterco = 0.5 * self.cts.rhow * self.vb**2 * self.cts.wsa
         self.airco   = 0.5 * self.cts.rhoa * self.ua**2 * self.cts.sail_area
 
+        self.fn = u / np.sqrt(self.cts.lwl * self.cts.g)
+                
     def __pvec(self,x):
         return [ x*x*x*x*x, x*x*x*x, x*x*x, x*x, x, 1]
     
     def hull(self,u,beta,delta,phi):
-        phi_rad = phi * np.pi / 180.0
-        a = np.array([self.v0**2,   self.v0*phi_rad,   phi_rad**2, self.v0**4])
-        b = np.array([ self.v0,          phi_rad,     self.v0**3,     self.v0**2*phi_rad, self.v0*phi_rad**2, phi_rad**3])
-                
-        # --- X ---
-        fn = self.vb / np.sqrt(self.cts.lwl * self.cts.g)
-        ct = np.dot(self.cfs.ct,self.__pvec(fn))
-        xh0 = np.dot(self.cfs.hull_x,a)
-        xh  = (-ct + xh0) * self.waterco
-
-        # --- Y ---
-        yh0 = np.dot(self.cfs.hull_y,b)
-        yh  = yh0 * self.waterco
-
-        # --- K ---
-        kh0 = np.dot(self.cfs.hull_k,b)
-        kh = kh0 * self.waterco * self.cts.draft
-        
-        kh_heel = [0,0,-self.cts.disp * self.cts.g * self.cts.gm * np.sin(phi_rad),0]
-
-        # --- N ---
-        nh0 = np.dot(self.cfs.hull_n,b)
-        nh = nh0 * self.waterco * self.cts.lwl
-
-        return np.array([xh, yh, kh, nh]) + np.array(kh_heel)
+        cfx = RegularGridInterpolator(self.param_range, self.hull_coeffs[:,:,:,3], bounds_error=False, fill_value=None)
+        cfy = RegularGridInterpolator(self.param_range, self.hull_coeffs[:,:,:,4], bounds_error=False, fill_value=None)
+        cmx = RegularGridInterpolator(self.param_range, self.hull_coeffs[:,:,:,5], bounds_error=False, fill_value=None)
+        cmz = RegularGridInterpolator(self.param_range, self.hull_coeffs[:,:,:,6], bounds_error=False, fill_value=None)
+        xh = cfx((phi, beta, self.fn)) * self.waterco
+        yh = cfy((phi, beta, self.fn)) * self.waterco
+        kh = cmx((phi, beta, self.fn)) * self.waterco * self.cts.draft
+        nh = cmz((phi, beta, self.fn)) * self.waterco * self.cts.lwl
+        return np.array([xh, yh, kh, nh])
     
     def rudder(self,u,beta,delta,phi):
         phi_rad = phi * np.pi / 180.0

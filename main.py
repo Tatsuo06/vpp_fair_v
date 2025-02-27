@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 from vpp4d import VPP4D
 from vpp3d import VPP3D
 from coeffs import Coefficients
+from balance import Balance
+from balance_mod import BalanceMod
 
 class Constants:
     def __init__(self):
@@ -37,13 +39,16 @@ if __name__ == "__main__":
     ut = 5                # true wind speed
     cfs = Coefficients()
     cts = Constants()
-    vpp = VPP4D(ut,cts,cfs)
-    vpp.run(20,180,True)      # true wind angle range
-    vpp.plot_polar(0,15)
-    vpp.plot(-10,10)
+    blc = BalanceMod(cts,cfs)
+    #blc = Balance(cts,cfs)
 
-    vpp = VPP3D(ut,cts,cfs)
+    vpp = VPP4D(ut,cts,cfs,blc)
     vpp.run(20,180,True)      # true wind angle range
-    vpp.plot_polar(0,15)
-    vpp.plot(-10,10)
+    vpp.plot_polar(0,15,"polar4dm.png")
+    vpp.plot(-10,10,"result4dm.png")
+
+    vpp = VPP3D(ut,cts,cfs,blc)
+    vpp.run(20,180,True)      # true wind angle range
+    vpp.plot_polar(0,15,"polar3dm.png")
+    vpp.plot(-10,10,"result3dm.png")
     

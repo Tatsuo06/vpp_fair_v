@@ -5,16 +5,15 @@ Created by T. Nishikawa based on [FAIR V-ＶＰＰ5m記号付07-11-11.xls] of Pr
 
 import numpy as np
 from coeffs import Coefficients
-from balance import Balance
 import scipy as sp
 import matplotlib.pyplot as plt
 
 class VPP3D:
-    def __init__(self,ut,cts,cfs):
+    def __init__(self,ut,cts,cfs,blc):
         self.ut  = ut
         self.cts = cts
         self.cfs = cfs
-        self.blc = Balance(cts,cfs)
+        self.blc = blc
 
     def run(self,a0,a1,verbose=False):
         # --- start ---
@@ -52,7 +51,7 @@ class VPP3D:
         s = self.blc.sail(u,beta,delta,phi)
         return h[0:3] + r[0:3] + s[0:3]
         
-    def plot_polar(self,rmin,rmax):    
+    def plot_polar(self,rmin,rmax,fname):    
         ax = plt.subplot(111, projection="polar")
         ax.plot(self.dat[0]*np.pi/180, self.dat[1]*3600/1852)
         ax.set_theta_direction(-1)
@@ -60,11 +59,11 @@ class VPP3D:
         ax.set_theta_zero_location("N")
         ax.set_title("Boat Speed[knot](3DOF)")
         ax.set_rlim([rmin, rmax])
-        plt.savefig("polar3d.png")
+        plt.savefig(fname)
         plt.clf()
         plt.close()
 
-    def plot(self,ymin,ymax):    
+    def plot(self,ymin,ymax,fname):    
         a = np.sqrt(self.cts.lwl*self.cts.g)
         plt.plot(self.dat[0], self.dat[1]/a*10, label="Boat speed Fn*10")
         plt.plot(self.dat[0], self.dat[2],      label="Leeway angle[deg]")
@@ -76,7 +75,7 @@ class VPP3D:
         plt.grid()
         plt.title("3DOF")
         #plt.show()
-        plt.savefig("result3d.png")
+        plt.savefig(fname)
         plt.clf()
         plt.close()        
 
