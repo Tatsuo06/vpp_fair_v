@@ -29,6 +29,33 @@ class Constants:
         print("Sail Area: {0:.2f}".format(self.sail_area))
         print("CEz:       {0:.2f}".format(self.zce))
         print("GM:        {0:.2f}".format(self.gm))
+
+def plot_3d(n,zlabel):
+    hull = np.load("hull.npy")
+    gphi, gbeta, gfn = np.meshgrid(phi_range, beta_range, fn_range, indexing='ij')
+    col = ["blue","red","green","yellow"]
+    fig = plt.figure(figsize=(12,6))
+
+    ax1 = fig.add_subplot(121, projection='3d')
+    for i in range(len(beta_range)):
+        ax1.plot_wireframe( gphi[:,i,:], gfn[:,i,:], hull[:,0,:,n],color=col[i], label="beta={0:g}".format(beta_range[i]))
+    ax1.legend()
+    ax1.set_xlabel("phi")
+    ax1.set_ylabel("fn")
+    ax1.set_zlabel(zlabel)
+
+    ax2 = fig.add_subplot(122, projection='3d')
+    for i in range(len(phi_range)):
+        ax2.plot_wireframe( gbeta[i,:,:], gfn[i,:,:], hull[i,:,:,n],color=col[i], label="phi={0:g}".format(phi_range[i]))
+    ax2.legend()
+    ax2.set_xlabel("beta")
+    ax2.set_ylabel("fn")
+    ax2.set_zlabel(zlabel)
+
+    plt.savefig(zlabel+".png")
+    #plt.show()
+    plt.clf()
+    plt.close()        
         
 if __name__ == "__main__":
     ut = 5                # true wind speed
@@ -76,7 +103,13 @@ if __name__ == "__main__":
     #            n += 1
     #np.save("hull",data)
 
-    # -------------------------
+    # --- plot ---
+    plot_3d(3,"cx")
+    plot_3d(4,"cy")
+    plot_3d(5,"ck")
+    plot_3d(6,"cn")
+
+    # --- HOW TO USE ---
     hull = np.load("hull.npy")    
     cfx = RegularGridInterpolator((phi_range, beta_range, fn_range), hull[:,:,:,3], bounds_error=False, fill_value=None)
     cfy = RegularGridInterpolator((phi_range, beta_range, fn_range), hull[:,:,:,4], bounds_error=False, fill_value=None)                
