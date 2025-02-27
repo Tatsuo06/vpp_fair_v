@@ -39,11 +39,12 @@ class VPP4D:
         plt.clf()
         plt.close()
 
-    def plot(self,ymin,ymax):    
-        plt.plot(self.dat[0], self.dat[1],    label="Boat speed X[m/s]")
-        plt.plot(self.dat[0], self.dat[2],    label="Leeway angle[deg]")
-        plt.plot(self.dat[0], self.dat[3],    label="Rudder angle[deg](luff up: plus)")
-        plt.plot(self.dat[0], self.dat[4]/10, label="Heel angle [deg/10](anti heel: plus)")
+    def plot(self,ymin,ymax):
+        a = np.sqrt(self.cts.lwl*self.cts.g)
+        plt.plot(self.dat[0], self.dat[1]/a*10, label="Boat speed Fn*10")
+        plt.plot(self.dat[0], self.dat[2],      label="Leeway angle[deg]")
+        plt.plot(self.dat[0], self.dat[3],      label="Rudder angle[deg](luff up: plus)")
+        plt.plot(self.dat[0], self.dat[4]/10,   label="Heel angle [deg/10](anti heel: plus)")
         plt.xlabel("True wind angle [deg]")
         plt.ylim(ymin,ymax)
         plt.legend()
