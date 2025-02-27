@@ -6,39 +6,15 @@ from balance import Balance
 from main import Constants
 from scipy.interpolate import RegularGridInterpolator
 
-class Constants:
-    def __init__(self):
-        self.rhoa = 1.2
-        self.rhow = 1025.0
-        self.g    = 9.807
-
-        a = 1 # 2.515
-        self.lwl       = 8.55 * a
-        self.draft     = 1.94 * a
-        self.sail_area = 56.4 * a**2
-        self.zce       = -6.4 * a
-        self.disp      = 3775.0 * a**3
-        self.gm        = 1.31 * a
-
-        self.wsa = self.lwl * self.draft
-        
-        print("LWL:       {0:.2f}".format(self.lwl))
-        print("Draft:     {0:.2f}".format(self.draft))
-        print("Disp:      {0:.2f}".format(self.disp))
-        print("WSA:       {0:.2f}".format(self.wsa))
-        print("Sail Area: {0:.2f}".format(self.sail_area))
-        print("CEz:       {0:.2f}".format(self.zce))
-        print("GM:        {0:.2f}".format(self.gm))
-
 def plot_3d(n,zlabel):
     hull = np.load("hull.npy")
     gphi, gbeta, gfn = np.meshgrid(phi_range, beta_range, fn_range, indexing='ij')
-    col = ["blue","red","green","yellow"]
+    col = plt.get_cmap("hsv")
     fig = plt.figure(figsize=(12,6))
 
     ax1 = fig.add_subplot(121, projection='3d')
     for i in range(len(beta_range)):
-        ax1.plot_wireframe( gphi[:,i,:], gfn[:,i,:], hull[:,i,:,n], color=col[i], label="beta={0:g}".format(beta_range[i]))
+        ax1.plot_wireframe( gphi[:,i,:], gfn[:,i,:], hull[:,i,:,n], color=col(i/len(beta_range)), label="beta={0:g}".format(beta_range[i]))
     ax1.legend()
     ax1.set_xlabel("phi")
     ax1.set_ylabel("fn")
@@ -46,7 +22,7 @@ def plot_3d(n,zlabel):
 
     ax2 = fig.add_subplot(122, projection='3d')
     for i in range(len(phi_range)):
-        ax2.plot_wireframe( gbeta[i,:,:], gfn[i,:,:], hull[i,:,:,n], color=col[i], label="phi={0:g}".format(phi_range[i]))
+        ax2.plot_wireframe( gbeta[i,:,:], gfn[i,:,:], hull[i,:,:,n], color=col(i/len(phi_range)), label="phi={0:g}".format(phi_range[i]))
     ax2.legend()
     ax2.set_xlabel("beta")
     ax2.set_ylabel("fn")
