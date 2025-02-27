@@ -38,7 +38,7 @@ def plot_3d(n,zlabel):
 
     ax1 = fig.add_subplot(121, projection='3d')
     for i in range(len(beta_range)):
-        ax1.plot_wireframe( gphi[:,i,:], gfn[:,i,:], hull[:,0,:,n],color=col[i], label="beta={0:g}".format(beta_range[i]))
+        ax1.plot_wireframe( gphi[:,i,:], gfn[:,i,:], hull[:,i,:,n], color=col[i], label="beta={0:g}".format(beta_range[i]))
     ax1.legend()
     ax1.set_xlabel("phi")
     ax1.set_ylabel("fn")
@@ -46,7 +46,7 @@ def plot_3d(n,zlabel):
 
     ax2 = fig.add_subplot(122, projection='3d')
     for i in range(len(phi_range)):
-        ax2.plot_wireframe( gbeta[i,:,:], gfn[i,:,:], hull[i,:,:,n],color=col[i], label="phi={0:g}".format(phi_range[i]))
+        ax2.plot_wireframe( gbeta[i,:,:], gfn[i,:,:], hull[i,:,:,n], color=col[i], label="phi={0:g}".format(phi_range[i]))
     ax2.legend()
     ax2.set_xlabel("beta")
     ax2.set_ylabel("fn")
@@ -56,7 +56,7 @@ def plot_3d(n,zlabel):
     #plt.show()
     plt.clf()
     plt.close()        
-        
+
 if __name__ == "__main__":
     ut = 5                # true wind speed
     cfs = Coefficients()
@@ -68,7 +68,7 @@ if __name__ == "__main__":
 
     phi_range  = np.linspace(0,  30.0, 4)
     beta_range = np.linspace(0,   0.6, 4)
-    fn_range   = np.linspace(0.1, 1.0, 10)
+    fn_range   = np.linspace(0.1, 0.5, 10)
 
     hull = []
     for phi in phi_range:
@@ -87,9 +87,9 @@ if __name__ == "__main__":
                 
             
     hull = np.array(hull)
-    #print("phi, beta, fn, cfx, cfy, cmx, cmz")
-    #for h in hull:
-    #    print("{0:5.2f},{1:5.2f},{2:5.2f},{3:10.2e},{4:10.2e},{5:10.2e},{6:10.2e}".format(h[0],h[1],h[2],h[3],h[4],h[5],h[6]))
+    print("phi, beta, fn, cfx, cfy, cmx, cmz")
+    for h in hull:
+        print("{0:5.2f},{1:5.2f},{2:5.2f},{3:10.2e},{4:10.2e},{5:10.2e},{6:10.2e}".format(h[0],h[1],h[2],h[3],h[4],h[5],h[6]))
     np.save("hull",hull.reshape(len(phi_range),len(beta_range),len(fn_range),7))
 
     # --- convert ---

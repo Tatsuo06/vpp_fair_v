@@ -14,7 +14,7 @@ class BalanceMod:
         self.hull_coeffs = np.load("hull.npy")
         rphi  = np.linspace(0,  30.0, 4)
         rbeta = np.linspace(0,   0.6, 4)
-        rfn   = np.linspace(0.1, 1.0, 10)
+        rfn   = np.linspace(0.1, 0.5, 10)
         self.param_range = (rphi, rbeta, rfn)
         
     def update_params(self,u,beta,delta,phi,gamma_t,ut):
