@@ -5,8 +5,9 @@ Created by T. Nishikawa based on [FAIR V-ＶＰＰ5m記号付07-11-11.xls] of Pr
 import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
-from vpp import *
-from coeffs import *
+from vpp4d import VPP4D
+from vpp3d import VPP3D
+from coeffs import Coefficients
 
 class Constants:
     def __init__(self):
@@ -36,8 +37,13 @@ if __name__ == "__main__":
     ut = 5                # true wind speed
     cfs = Coefficients()
     cts = Constants()
-    vpp = VPP(ut,cts,cfs)
-    vpp.run(20,180)      # true wind angle range
-    vpp.plot_polar()
-    vpp.plot()
+    vpp = VPP4D(ut,cts,cfs)
+    vpp.run(20,180,True)      # true wind angle range
+    vpp.plot_polar(0,15)
+    vpp.plot(-10,10)
+
+    vpp = VPP3D(ut,cts,cfs)
+    vpp.run(20,180,True)      # true wind angle range
+    vpp.plot_polar(0,15)
+    vpp.plot(-10,10)
     

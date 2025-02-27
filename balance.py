@@ -81,4 +81,3 @@ class Balance:
         ns  = ns1 * cos_phi**2 * self.airco * np.sqrt(self.cts.sail_area)
 
         return np.array([xs, ys, ks, ns])
-

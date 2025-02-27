@@ -9,7 +9,7 @@ from balance import Balance
 import scipy as sp
 import matplotlib.pyplot as plt
 
-class VPP:
+class VPP4D:
     def __init__(self,ut,cts,cfs):
         self.ut  = ut
         self.cts = cts
@@ -27,27 +27,28 @@ class VPP:
             dat.append([self.gamma_t,result.x[0],result.x[1],result.x[2],result.x[3]])
         self.dat = np.array(dat).T
         
-    def plot_polar(self):    
+    def plot_polar(self,rmin,rmax):    
         ax = plt.subplot(111, projection="polar")
         ax.plot(self.dat[0]*np.pi/180, self.dat[1]*3600/1852)
         ax.set_theta_direction(-1)
         ax.set_theta_zero_location("N")
-        ax.set_title("Boat Speed[knot]")
-        #ax.set_rlim([0, 5.0])
+        ax.set_title("Boat Speed[knot](4DOF)")
+        ax.set_rlim([rmin, rmax])
         #plt.show()
         plt.savefig("polar.png")
         plt.clf()
         plt.close()
 
-    def plot(self):    
+    def plot(self,ymin,ymax):    
         plt.plot(self.dat[0], self.dat[1],    label="Boat speed X[m/s]")
         plt.plot(self.dat[0], self.dat[2],    label="Leeway angle[deg]")
         plt.plot(self.dat[0], self.dat[3],    label="Rudder angle[deg](luff up: plus)")
         plt.plot(self.dat[0], self.dat[4]/10, label="Heel angle [deg/10](anti heel: plus)")
         plt.xlabel("True wind angle [deg]")
-        #plt.ylim(-10,10)
+        plt.ylim(ymin,ymax)
         plt.legend()
         plt.grid()
+        plt.title("4DOF")
         #plt.show()
         plt.savefig("result.png")
         plt.clf()
