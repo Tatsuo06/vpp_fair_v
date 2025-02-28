@@ -38,7 +38,7 @@ class VPP3D:
         r = self.blc.rudder(u,beta,delta,phi)
         s = self.blc.sail(u,beta,delta,phi)
         return h[-1] + r[-1] + s[-1]
-        
+    
     def objective(self,x):
         u     = x[0] # x方向速度
         beta  = x[1] # Leeway
@@ -49,7 +49,12 @@ class VPP3D:
         h = self.blc.hull(u,beta,delta,phi)
         r = self.blc.rudder(u,beta,delta,phi)
         s = self.blc.sail(u,beta,delta,phi)
-        return h[0:3] + r[0:3] + s[0:3]
+
+        t = h[0:3] + r[0:3] + s[0:3]
+        for i in range(len(t)):            
+            t[i] *= t[i]
+
+        return t
         
     def plot_polar(self,rmin,rmax,fname):    
         ax = plt.subplot(111, projection="polar")

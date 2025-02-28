@@ -63,4 +63,9 @@ class VPP4D:
         h = self.blc.hull(u,beta,delta,phi)
         r = self.blc.rudder(u,beta,delta,phi)
         s = self.blc.sail(u,beta,delta,phi)
-        return h + r + s
+
+        t = h + r + s                
+        for i in range(len(t)):            
+            t[i] *= t[i]
+
+        return t
